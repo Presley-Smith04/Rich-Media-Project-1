@@ -11,8 +11,10 @@ const port = process.env.PORT || process.env.NODE_PORT || 3000;
 
 
 //URL structure map
-//4 get requests = Name, Type, ID, Evolution
+//4 get requests = Name, Type, ID, Evolution (maybe weakness, or get all?)
 //2 Post requests = Add Pokemon, and either remove? or favortie?
+
+//maybe have like different filters?
 const urlStruct = {
     '/': htmlHandler.getIndex,
     '/style.css': htmlHandler.getCSS,
