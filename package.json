@@ -9,7 +9,7 @@
     "test": "echo \"Tests complete\""
   },
   "keywords": [],
-  "author": "",
+  "author": "Presley Smith",
   "license": "ISC",
   "dependencies": {
     "body-parser": "^1.20.3",
