@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pokémon API</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <h1>Pokémon API Interface</h1>
+
+
+    <label for="searchName">Search Pokémon by Name:</label>
+    <input type="text" id="searchName" placeholder="Enter Pokémon Name">
+    <button onclick="searchPokemonByName()">Search</button>
+
+
+    <label for="searchType">Search Pokémon by Type:</label>
+    <input type="text" id="searchType" placeholder="Enter Type (e.g. Fire)">
+    <button onclick="searchPokemonByType()">Search</button>
+
+
+    <label for="searchId">Search Pokémon by ID:</label>
+    <input type="number" id="searchId" placeholder="Enter Pokémon ID">
+    <button onclick="searchPokemonById()">Search</button>
+
+
+    <label for="searchEvolution">Search Evolution:</label>
+    <input type="text" id="searchEvolution" placeholder="Enter Pokémon Name">
+    <button onclick="searchPokemonByEvolution()">Search</button>
+
+
+    <h2>Add Pokémon</h2>
+    <form id="addPokemonForm">
+        <input type="text" id="newName" placeholder="Name">
+        <input type="text" id="newType" placeholder="Type (comma-separated)">
+        <input type="text" id="newHeight" placeholder="Height">
+        <input type="text" id="newWeight" placeholder="Weight">
+        <button type="button" onclick="addPokemon()">Add Pokémon</button>
+    </form>
+
+
+    <h2>Favorite Pokémon</h2>
+    <label for="favoritePokemon">Enter Pokémon Name to Favorite:</label>
+    <input type="text" id="favoritePokemon" placeholder="Pokémon Name">
+    <button onclick="favoritePokemon()">Favorite</button>
+
+    <div id="output"></div>
+
+
+    <script>
+
+        //search for name
+        async function searchPokemonByName() {
+            //get name id from json file
+            const name = document.getElementById('searchName').value;
+            const response = await fetch(`/getPokemonByName?name=${name}`);
+            const data = await response.json();
+
+            //display
+            document.getElementById('output').innerHTML = formatPokemonOutput(data);
+        }
+
+
+
+        //type
+        async function searchPokemonByType() {
+            //type search in json file
+            const type = document.getElementById('searchType').value;
+            const response = await fetch(`/getPokemonByType?type=${type}`);
+            const data = await response.json();
+
+            //display
+            document.getElementById('output').innerHTML = formatPokemonOutput(data);
+        }
+
+
+        //id searchy, search id in the json file
+        async function searchPokemonById() {
+            //get id
+            const id = document.getElementById('searchId').value;
+            const response = await fetch(`/getPokemonById?id=${id}`);
+            const data = await response.json();
+
+            //display
+            document.getElementById('output').innerHTML = formatPokemonOutput(data);
+        }
+        
+        //need to add the rest; evo, fav, not found, criteria, etc.
+
+
+        //how to format it on the way out
+        function formatPokemonOutput(data) {
+            if (!data.name) return "<p>No Pokémon found.</p>";
+            return `
+                <h2>${data.name}</h2>
+                <img src="${data.img}" alt="${data.name}">
+                <p>Type: ${data.type.join(', ')}</p>
+                <p>Height: ${data.height}</p>
+                <p>Weight: ${data.weight}</p>
+                <p>Next Evolution: ${data.next_evolution ? data.next_evolution.map(e => e.name).join(', ') : 'None'}</p>
+            `;
+        }
+    </script>
+</body>
+
+</html>
