@@ -11,8 +11,11 @@ const port = process.env.PORT || process.env.NODE_PORT || 3000;
 
 
 //URL structure map
-//4 get requests = Name, Type, ID, Evolution (maybe weakness, or get all?)
-//2 Post requests = Add Pokemon, and either remove? or favortie?
+//4 get requests = Name, Type, ID, Evolution (next and or previous if it has one)
+// ( or get all? get all that match a certain criteria (i.e. grass + name bulbasaur = results; and fire type + name bulbasaur = no data)
+
+
+//2 Post requests = Add Pokemon, or favortie? (save favorite data to a file, and get that data so it doesnt get deleted after a certain amount of time)
 
 //maybe have like different filters?
 const urlStruct = {
@@ -23,7 +26,7 @@ const urlStruct = {
     '/getPokemonEvolution': jsonHandler.getPokemonEvolution,
     '/getPokemonById': jsonHandler.getPokemonById,
     '/addPokemon': jsonHandler.addPokemon,
-    '/deletePokemon': jsonHandler.deletePokemon,
+    '/deletePokemon': jsonHandler.deletePokemon, //when deleted kil from all evolution lists (this should be fine with getting restored after i think its auto 30 min?)
     notFound: jsonHandler.notFound,
 };
 
