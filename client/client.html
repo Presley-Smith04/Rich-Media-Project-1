@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pokémon API</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
 </head>
 
 <body>
@@ -15,6 +16,7 @@
     <!-- simple text boxes with simple placeholders for text
     each has a button next to it which will access a funciton from the client.html script
     and those will fetch from JSON responses functions already made -->
+
 
     <label for="searchName">Search Pokémon by Name:</label>
     <input type="text" id="searchName" placeholder="Enter Pokémon Name">
@@ -38,6 +40,7 @@
 
     <h2>Add Pokémon</h2>
     <form id="addPokemonForm">
+        <input type="number" id="newId" placeholder="ID">
         <input type="text" id="newName" placeholder="Name">
         <input type="text" id="newType" placeholder="Type (comma-separated)">
         <input type="text" id="newHeight" placeholder="Height">
@@ -51,62 +54,133 @@
     <input type="text" id="favoritePokemon" placeholder="Pokémon Name">
     <button onclick="favoritePokemon()">Favorite</button>
 
+
     <div id="output"></div>
 
-
     <script>
-
-        //search for name
+        //by name
         async function searchPokemonByName() {
-            //get name id from json file
             const name = document.getElementById('searchName').value;
             const response = await fetch(`/getPokemonByName?name=${name}`);
             const data = await response.json();
-
-            //display
             document.getElementById('output').innerHTML = formatPokemonOutput(data);
         }
 
-
-
-        //type
+        //by type
         async function searchPokemonByType() {
-            //type search in json file
             const type = document.getElementById('searchType').value;
             const response = await fetch(`/getPokemonByType?type=${type}`);
             const data = await response.json();
-
-            //display
-            document.getElementById('output').innerHTML = formatPokemonOutput(data);
+            document.getElementById('output').innerHTML = formatPokemonOutputArray(data);
         }
 
-
-        //id searchy, search id in the json file
+        //by ID
         async function searchPokemonById() {
-            //get id
             const id = document.getElementById('searchId').value;
             const response = await fetch(`/getPokemonById?id=${id}`);
             const data = await response.json();
-
-            //display
             document.getElementById('output').innerHTML = formatPokemonOutput(data);
         }
-        
-        //need to add the rest; evo, fav, not found, criteria, etc.
 
+        //by evo
+        async function searchPokemonByEvolution() {
+            const name = document.getElementById('searchEvolution').value;
+            const response = await fetch(`/getPokemonByName?name=${name}`);
+            const data = await response.json();
 
-        //how to format it on the way out
-        function formatPokemonOutput(data) {
-            if (!data.name) return "<p>No Pokémon found.</p>";
-            return `
-                <h2>${data.name}</h2>
-                <img src="${data.img}" alt="${data.name}">
-                <p>Type: ${data.type.join(', ')}</p>
-                <p>Height: ${data.height}</p>
-                <p>Weight: ${data.weight}</p>
-                <p>Next Evolution: ${data.next_evolution ? data.next_evolution.map(e => e.name).join(', ') : 'None'}</p>
-            `;
+            //evo info
+            document.getElementById('output').innerHTML = formatPokemonOutput(data, true);
         }
+
+
+        //add new
+        async function addPokemon() {
+            //criteria
+            const id = document.getElementById('newId').value;
+            const name = document.getElementById('newName').value;
+            const type = document.getElementById('newType').value.split(',').map(t => t.trim());
+            const height = document.getElementById('newHeight').value;
+            const weight = document.getElementById('newWeight').value;
+
+            //check value fields
+            if (!name || !id || !type.length || !height || !weight) {
+                document.getElementById('output').innerHTML = "<p>Please fill in all fields.</p>";
+                return;
+            }
+
+            //new pokemon 
+            const newPokemon = {
+                id: id,
+                name: name,
+                type: type,
+                height: height,
+                weight: weight,
+            };
+
+            //responses 
+            const response = await fetch('/addPokemon', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(newPokemon),
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                document.getElementById('output').innerHTML = `<p>Error: ${errorData.message}</p>`;
+                return;
+            }
+            //result messages
+            const result = await response.json();
+            document.getElementById('output').innerHTML = `<p>${result.message}</p>`;
+        }
+
+
+
+
+        //favorite 
+        async function favoritePokemon() {
+            const name = document.getElementById('favoritePokemon').value;
+
+            const response = await fetch('/favoritePokemon', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name }),
+            });
+
+            const result = await response.json();
+            document.getElementById('output').innerHTML = `<p>${result.message}</p>`;
+        }
+
+        //display pokemon and details (including evolution)
+        function formatPokemonOutput(data, showEvolution = false) {
+            if (!data.name) return "<p>No Pokémon found.</p>";
+
+            let evolutionDetails = '';
+            if (showEvolution && data.next_evolution) {
+                evolutionDetails = `
+            <p><strong>Next Evolution:</strong> ${data.next_evolution.map(e => e.name).join(', ')}</p>
+        `;
+            }
+
+            return `
+        <div class="pokemon-card">
+            <h2>${data.name}</h2>
+            <img src="${data.img}" alt="${data.name}">
+            <p><strong>Type:</strong> ${data.type.map(t => `<span>${t}</span>`).join(' ')}</p>
+            <p><strong>Height:</strong> ${data.height}</p>
+            <p><strong>Weight:</strong> ${data.weight}</p>
+            ${evolutionDetails}
+        </div>
+        `;
+        }
+
+
+        //format
+        function formatPokemonOutputArray(data) {
+            if (!Array.isArray(data) || data.length === 0) return "<p>No Pokémon found.</p>";
+            return data.map(formatPokemonOutput).join('');
+        };
+
     </script>
 </body>
 

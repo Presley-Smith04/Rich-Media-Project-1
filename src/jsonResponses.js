@@ -3,7 +3,7 @@ const pokemonData = require('../data/pokedex.json');
 
 
 
-//respond to server
+//send response
 const respondJSON = (response, status, object) => {
     response.writeHead(status, { 'Content-Type': 'application/json' });
     response.write(JSON.stringify(object));
@@ -12,15 +12,12 @@ const respondJSON = (response, status, object) => {
 
 
 
-
-//get name
+//poke by name
 const getPokemonByName = (request, response, parsedUrl) => {
-    //get name parameter from json file
     const name = parsedUrl.searchParams.get('name');
     const result = pokemonData.find(p => p.name.toLowerCase() === name.toLowerCase());
 
     if (result) {
-        //post from json file
         return respondJSON(response, 200, result);
     }
     return respondJSON(response, 404, { message: 'Pokémon not found', id: 'notFound' });
@@ -28,15 +25,11 @@ const getPokemonByName = (request, response, parsedUrl) => {
 
 
 
-
-
-//get by type
+//poke by type
 const getPokemonByType = (request, response, parsedUrl) => {
-    //search for type parameter in the file
     const type = parsedUrl.searchParams.get('type');
     const results = pokemonData.filter(p => p.type.includes(type));
 
-    //post type data from json file
     if (results.length > 0) {
         return respondJSON(response, 200, results);
     }
@@ -45,15 +38,12 @@ const getPokemonByType = (request, response, parsedUrl) => {
 
 
 
-
-// GET Pokémon by ID
+//poke by id
 const getPokemonById = (request, response, parsedUrl) => {
-    //get id parameter from json file
     const id = parseInt(parsedUrl.searchParams.get('id'), 10);
     const result = pokemonData.find(p => p.id === id);
 
     if (result) {
-        //post data from json file
         return respondJSON(response, 200, result);
     }
     return respondJSON(response, 404, { message: 'Pokémon not found', id: 'notFound' });
@@ -61,69 +51,101 @@ const getPokemonById = (request, response, parsedUrl) => {
 
 
 
-
-//next/orev evo )
+//get evos
 const getPokemonEvolution = (request, response, parsedUrl) => {
-    //get evolution??/
-    //need next/prev/any????
     const name = parsedUrl.searchParams.get('name');
     const pokemon = pokemonData.find(p => p.name.toLowerCase() === name.toLowerCase());
 
+    if (!pokemon) {
+        return respondJSON(response, 404, { message: 'Pokémon not found', id: 'notFound' });
+    }
+
+    //next evo in data 
+    const nextEvolutions = pokemon.next_evolution ? pokemon.next_evolution.map(e => e.name) : [];
+
+    return respondJSON(response, 200, {
+        name: pokemon.name,
+        evolvesTo: nextEvolutions.length > 0 ? nextEvolutions : ['None'],
+    });
 };
 
 
 
-//multiple criteria one, like filters n stuff
+
+//search for criteria
 const getPokemonByCriteria = (request, response, parsedUrl) => {
+    let results = [...pokemonData];
+
+    //all params
     const name = parsedUrl.searchParams.get('name')?.toLowerCase();
     const type = parsedUrl.searchParams.get('type');
+    const height = parsedUrl.searchParams.get('height');
+    const weight = parsedUrl.searchParams.get('weight');
+
+    //apply if params are provided
+    if (name) {
+        results = results.filter(p => p.name.toLowerCase().includes(name));
+    }
+    if (type) {
+        results = results.filter(p => p.type.includes(type));
+    }
+    if (height) {
+        results = results.filter(p => p.height === height);
+    }
+    if (weight) {
+        results = results.filter(p => p.weight === weight);
+    }
+
+    if (results.length > 0) {
+        return respondJSON(response, 200, results);
+    }
+    return respondJSON(response, 404, { message: 'No Pokémon matched the given criteria', id: 'notFound' });
 };
 
 
 
-//adding pokemon
+//add new 
 const addPokemon = (request, response) => {
     const newPokemon = request.body;
 
-    //add pokemon with the criteria of the other one
-    if (!newPokemon.name || !newPokemon.id || !newPokemon.type) {
+    //does it exist
+    if (!newPokemon.name || !newPokemon.type) {
         return respondJSON(response, 400, { message: 'Missing required Pokémon data', id: 'badRequest' });
     }
 
-    //push to file 
+    //set new id if not there
+    newPokemon.id = newPokemon.id || pokemonData.length + 1;
+
     pokemonData.push(newPokemon);
     return respondJSON(response, 201, { message: 'Pokémon added successfully', pokemon: newPokemon });
 };
 
 
 
-//save pokemon and add to external file 
+
+//save to FAVORTIE
 const favoritePokemon = (request, response) => {
     const { id, name } = request.body;
 
-
-    //bad request
     if (!id || !name) {
         return respondJSON(response, 400, { message: 'Missing required Pokémon data', id: 'badRequest' });
     }
 
-
-    //push pokemon from pokemon json to favorites json
+    //read the fav file
     fs.readFile('./data/favorites.json', (err, data) => {
-
-        //update idss
         const favorites = err ? [] : JSON.parse(data);
+
+        //don't duplicate
         if (!favorites.some(fav => fav.id === id)) {
             favorites.push({ id, name });
 
-            //write to data/fav json
+            //save fav list
             fs.writeFile('./data/favorites.json', JSON.stringify(favorites, null, 2), (writeErr) => {
                 if (writeErr) return respondJSON(response, 500, { message: 'Error saving favorite', id: 'serverError' });
 
                 return respondJSON(response, 201, { message: 'Pokémon favorited successfully' });
             });
         } else {
-            //already made in the favorites 
             return respondJSON(response, 400, { message: 'Pokémon already in favorites', id: 'duplicate' });
         }
     });
@@ -131,15 +153,13 @@ const favoritePokemon = (request, response) => {
 
 
 
-//not found
+//invalid routes
 const notFound = (request, response) => {
     respondJSON(response, 404, { message: 'Not found', id: 'notFound' });
 };
 
 
-
-//export functions
-//not done; evo, vriteria, fav?
+//export 
 module.exports = {
     getPokemonByName,
     getPokemonByType,
