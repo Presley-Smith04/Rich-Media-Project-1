@@ -2967,5 +2967,14 @@
       "Ghost",
       "Dark"
     ]
+  },
+  {
+    "id": "123",
+    "name": "sigma",
+    "type": [
+      "Fire"
+    ],
+    "height": "11",
+    "weight": "1"
   }
 ]

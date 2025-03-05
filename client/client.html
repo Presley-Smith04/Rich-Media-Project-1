@@ -102,13 +102,14 @@
             const height = document.getElementById('newHeight').value;
             const weight = document.getElementById('newWeight').value;
 
-            //check value fields
+            //fields filled?
             if (!name || !id || !type.length || !height || !weight) {
                 document.getElementById('output').innerHTML = "<p>Please fill in all fields.</p>";
                 return;
             }
 
-            //new pokemon 
+            //add new Pokémon
+            //with all criteria met
             const newPokemon = {
                 id: id,
                 name: name,
@@ -117,7 +118,7 @@
                 weight: weight,
             };
 
-            //responses 
+            //send data to the server
             const response = await fetch('/addPokemon', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },

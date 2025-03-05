@@ -2,6 +2,11 @@ const fs = require('fs');
 const pokemonData = require('../data/pokedex.json');
 
 
+//ensure the server uses JSON parsing middleware
+const express = require('express');
+const app = express();
+app.use(express.json());
+
 
 //send response
 const respondJSON = (response, status, object) => {
@@ -108,16 +113,25 @@ const getPokemonByCriteria = (request, response, parsedUrl) => {
 const addPokemon = (request, response) => {
     const newPokemon = request.body;
 
-    //does it exist
+    //are all fields provided
     if (!newPokemon.name || !newPokemon.type) {
         return respondJSON(response, 400, { message: 'Missing required Pokémon data', id: 'badRequest' });
     }
 
-    //set new id if not there
+    //new id if not already
     newPokemon.id = newPokemon.id || pokemonData.length + 1;
 
+    //add pokemon to memory data
     pokemonData.push(newPokemon);
-    return respondJSON(response, 201, { message: 'Pokémon added successfully', pokemon: newPokemon });
+
+    //write to pokededxx
+    fs.writeFile('./data/pokedex.json', JSON.stringify(pokemonData, null, 2), (err) => {
+        if (err) {
+            return respondJSON(response, 500, { message: 'Error saving Pokémon data', id: 'serverError' });
+        }
+        //success message!!!!
+        return respondJSON(response, 201, { message: 'Pokémon added successfully', pokemon: newPokemon });
+    });
 };
 
 
