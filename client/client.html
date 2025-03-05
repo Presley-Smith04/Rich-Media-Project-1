@@ -53,6 +53,7 @@
     <label for="favoritePokemon">Enter Pokémon Name to Favorite:</label>
     <input type="text" id="favoritePokemon" placeholder="Pokémon Name">
     <button onclick="favoritePokemon()">Favorite</button>
+    
 
 
     <div id="output"></div>
@@ -142,17 +143,20 @@
         async function favoritePokemon() {
             const name = document.getElementById('favoritePokemon').value;
 
+            //post request
             const response = await fetch('/favoritePokemon', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ name }),
             });
 
+            //wait for response, give message
             const result = await response.json();
             document.getElementById('output').innerHTML = `<p>${result.message}</p>`;
         }
 
-        //display pokemon and details (including evolution)
+
+        //display pokemon and details 
         function formatPokemonOutput(data, showEvolution = false) {
             if (!data.name) return "<p>No Pokémon found.</p>";
 

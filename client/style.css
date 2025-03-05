@@ -1,11 +1,11 @@
-/* Reset some default styles */
+
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
-/* Body style */
+
 body {
     background: #f2f2f2;
     font-family: 'Arial', sans-serif;
@@ -13,16 +13,16 @@ body {
     text-align: center;
 }
 
-/* Main title */
+
 h1 {
     font-family: 'Pokemon Solid', sans-serif;
-    font-size: 3rem;
+    font-size: 8rem;
     color: #f1c40f;
     text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.6);
     margin-bottom: 20px;
 }
 
-/* Labels */
+
 label {
     font-size: 1.2rem;
     color: #34495e;
@@ -30,7 +30,8 @@ label {
     margin-top: 10px;
 }
 
-/* Input fields */
+
+
 input[type="text"],
 input[type="number"] {
     padding: 10px;
@@ -41,7 +42,7 @@ input[type="number"] {
     width: 250px;
 }
 
-/* Buttons */
+
 button {
     padding: 10px 20px;
     background-color: #e74c3c;
@@ -57,7 +58,8 @@ button:hover {
     background-color: #c0392b;
 }
 
-/* Form inputs */
+
+
 form input[type="text"] {
     margin-bottom: 10px;
     width: 300px;
@@ -73,12 +75,11 @@ form button:hover {
     background-color: #27ae60;
 }
 
-/* Output area */
 #output {
     margin-top: 30px;
 }
 
-/* Pokémon card */
+
 .pokemon-card {
     background-color: #ffffff;
     border-radius: 10px;
@@ -115,7 +116,6 @@ form button:hover {
     margin: 0 5px;
 }
 
-/* Add some space for the page */
 body {
     padding: 20px;
 }
@@ -127,20 +127,21 @@ button {
     margin-top: 10px;
 }
 
-/* Center the form */
+
+
 form {
     display: inline-block;
     text-align: left;
 }
 
-/* Pokémon evolution section */
+
 .pokemon-card .next-evolution {
     margin-top: 15px;
     font-size: 1rem;
     color: #f39c12;
 }
 
-/* Favorite section */
+
 #favoritePokemon {
     width: 250px;
 }

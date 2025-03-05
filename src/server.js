@@ -25,6 +25,7 @@ const urlStruct = {
     '/getPokemonByType': jsonHandler.getPokemonByType,
     '/getPokemonEvolution': jsonHandler.getPokemonEvolution,
     '/getPokemonById': jsonHandler.getPokemonById,
+    '/favoritePokemon': jsonHandler.favoritePokemon,
     '/addPokemon': jsonHandler.addPokemon,
     '/deletePokemon': jsonHandler.deletePokemon, //when deleted kil from all evolution lists (this should be fine with getting restored after i think its auto 30 min?)
     notFound: jsonHandler.notFound,
@@ -36,6 +37,7 @@ const urlStruct = {
 const parseBody = (request, response, handler) => {
     const body = [];
 
+    //ERRORORORORORO status code
     request.on('error', (err) => {
         console.error('Request error:', err);
         response.statusCode = 400;
@@ -43,18 +45,22 @@ const parseBody = (request, response, handler) => {
     });
 
     request.on('data', (chunk) => {
-        console.log('Received chunk:', chunk.toString()); // Debug incoming data
+        //debug data chunks
+        console.log('Received chunk:', chunk.toString());
         body.push(chunk);
     });
 
     request.on('end', () => {
+        //log full body string
         const bodyString = Buffer.concat(body).toString();
-        console.log('Full request body:', bodyString); // Log full body string
+        console.log('Full request body:', bodyString);
 
         try {
-            request.body = JSON.parse(bodyString); // Fix: Parse JSON instead of querystring
-            console.log('Parsed request body:', request.body); // Debug parsed body
+            //json parse body strings
+            request.body = JSON.parse(bodyString);
+            console.log('Parsed request body:', request.body);
         } catch (err) {
+            //ererr
             console.error('Error parsing JSON:', err);
             response.statusCode = 400;
             response.end('Invalid JSON');

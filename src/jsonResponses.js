@@ -139,31 +139,51 @@ const addPokemon = (request, response) => {
 
 //save to FAVORTIE
 const favoritePokemon = (request, response) => {
-    const { id, name } = request.body;
+    console.log("Received request body:", request.body);
 
-    if (!id || !name) {
-        return respondJSON(response, 400, { message: 'Missing required Pokémon data', id: 'badRequest' });
+
+    //request name
+    let { name } = request.body || {};
+
+
+    //no name givven = fail
+    if (!name) {
+        console.log("Missing name in request body");
+        return respondJSON(response, 400, { message: 'Missing Pokémon name', id: 'badRequest' });
     }
 
-    //read the fav file
+    //read favorites file
     fs.readFile('./data/favorites.json', (err, data) => {
-        const favorites = err ? [] : JSON.parse(data);
+        let favorites = [];
+        //if error give error
+        if (!err) {
+            try {
+                favorites = JSON.parse(data);
+            } catch (parseErr) {
+                console.error("Error parsing favorites.json:", parseErr);
+            }
+        }
 
-        //don't duplicate
-        if (!favorites.some(fav => fav.id === id)) {
-            favorites.push({ id, name });
-
-            //save fav list
-            fs.writeFile('./data/favorites.json', JSON.stringify(favorites, null, 2), (writeErr) => {
-                if (writeErr) return respondJSON(response, 500, { message: 'Error saving favorite', id: 'serverError' });
-
-                return respondJSON(response, 201, { message: 'Pokémon favorited successfully' });
-            });
-        } else {
+        //lowercase names, already in file = dont add
+        if (favorites.some(fav => fav.name.toLowerCase() === name.toLowerCase())) {
             return respondJSON(response, 400, { message: 'Pokémon already in favorites', id: 'duplicate' });
         }
+
+        //push to fav
+        favorites.push({ name });
+
+        //write to fav file
+        fs.writeFile('./data/favorites.json', JSON.stringify(favorites, null, 2), (writeErr) => {
+            if (writeErr) {
+                console.error("Error saving favorite:", writeErr);
+                return respondJSON(response, 500, { message: 'Error saving favorite', id: 'serverError' });
+            }
+
+            return respondJSON(response, 201, { message: 'Pokémon favorited successfully' });
+        });
     });
 };
+
 
 
 
