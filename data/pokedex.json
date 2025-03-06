@@ -2976,5 +2976,14 @@
     ],
     "height": "11",
     "weight": "1"
+  },
+  {
+    "id": "2000",
+    "name": "sigma sigma boy ",
+    "type": [
+      "alpha"
+    ],
+    "height": "100",
+    "weight": "100"
   }
 ]
