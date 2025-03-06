@@ -21,21 +21,25 @@
     <label for="searchName">Search Pokémon by Name:</label>
     <input type="text" id="searchName" placeholder="Enter Pokémon Name">
     <button onclick="searchPokemonByName()">Search</button>
+    <button onclick="headPokemonByName()">Search: Head</button>
 
 
     <label for="searchType">Search Pokémon by Type:</label>
     <input type="text" id="searchType" placeholder="Enter Type (e.g. Fire)">
     <button onclick="searchPokemonByType()">Search</button>
+    <button onclick="headPokemonByType()">Search: Head</button>
 
 
     <label for="searchId">Search Pokémon by ID:</label>
     <input type="number" id="searchId" placeholder="Enter Pokémon ID">
     <button onclick="searchPokemonById()">Search</button>
+    <button onclick="headPokemonById()">Search: Head</button>
 
 
     <label for="searchEvolution">Search Evolution:</label>
     <input type="text" id="searchEvolution" placeholder="Enter Pokémon Name">
     <button onclick="searchPokemonByEvolution()">Search</button>
+    <button onclick="headPokemonByEvolution()">Search: Head</button>
 
 
     <h2>Add Pokémon</h2>
@@ -53,7 +57,7 @@
     <label for="favoritePokemon">Enter Pokémon Name to Favorite:</label>
     <input type="text" id="favoritePokemon" placeholder="Pokémon Name">
     <button onclick="favoritePokemon()">Favorite</button>
-    
+
 
 
     <div id="output"></div>
@@ -154,6 +158,61 @@
             const result = await response.json();
             document.getElementById('output').innerHTML = `<p>${result.message}</p>`;
         }
+
+
+
+        //ALL HEAD REQUEST FUNC HERE: 
+        //name head
+        async function headPokemonByName() {
+            const name = document.getElementById('searchName').value;
+            const response = await fetch(`/getPokemonByName?name=${name}`, { method: 'HEAD' });
+            console.log('HEAD Response Headers:', response.headers);
+            document.getElementById('output').innerHTML = formatHeaders(response.headers);
+
+        }
+
+
+        //type head
+        async function headPokemonByType() {
+            const type = document.getElementById('searchType').value;
+            const response = await fetch(`/getPokemonByType?type=${type}`, { method: 'HEAD' });
+            console.log('HEAD Response Headers:', response.headers);
+            document.getElementById('output').innerHTML = formatHeaders(response.headers);
+
+        }
+
+
+        //id head
+        async function headPokemonById() {
+            const id = document.getElementById('searchId').value;
+            const response = await fetch(`/getPokemonById?id=${id}`, { method: 'HEAD' });
+            console.log('HEAD Response Headers:', response.headers);
+            document.getElementById('output').innerHTML = formatHeaders(response.headers);
+
+        }
+
+
+        //evo head
+        async function headPokemonByEvolution() {
+            const evolution = document.getElementById('searchEvolution').value;
+            const response = await fetch(`/getPokemonByEvolution?evolution=${evolution}`, { method: 'HEAD' });
+            console.log('HEAD Response Headers:', response.headers);
+            document.getElementById('output').innerHTML = formatHeaders(response.headers);
+
+        }
+
+
+        //display to output 
+        function formatHeaders(headers) {
+            let headerText = "<h3>HEAD Response Headers:</h3><ul>";
+            headers.forEach((value, key) => {
+                headerText += `<li><strong>${key}:</strong> ${value}</li>`;
+            });
+            headerText += "</ul>";
+            return headerText;
+        }
+
+
 
 
         //display pokemon and details 
